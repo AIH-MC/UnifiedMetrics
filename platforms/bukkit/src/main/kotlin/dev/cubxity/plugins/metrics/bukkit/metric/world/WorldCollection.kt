@@ -23,7 +23,7 @@ import dev.cubxity.plugins.metrics.bukkit.bootstrap.UnifiedMetricsBukkitBootstra
 import dev.cubxity.plugins.metrics.bukkit.util.declaredMethodExists
 
 class WorldCollection(bootstrap: UnifiedMetricsBukkitBootstrap) : CollectorCollection {
-    private val collector = if (declaredMethodExists("org.bukkit.World", "getEntityCount")) {
+    private val collector = if (declaredMethodExists("org.bukkit.World", "getEntityCount") && declaredMethodExists("org.bukkit.World", "getChunkCount")) {
         PaperWorldCollector(bootstrap)
     } else {
         BukkitWorldCollector(bootstrap)
