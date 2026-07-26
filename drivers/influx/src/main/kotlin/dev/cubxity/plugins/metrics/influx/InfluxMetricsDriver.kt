@@ -26,10 +26,8 @@ import dev.cubxity.plugins.metrics.api.UnifiedMetrics
 import dev.cubxity.plugins.metrics.api.metric.MetricsDriver
 import dev.cubxity.plugins.metrics.api.metric.data.CounterMetric
 import dev.cubxity.plugins.metrics.api.metric.data.GaugeMetric
-import dev.cubxity.plugins.metrics.api.metric.data.HistogramMetric
 import dev.cubxity.plugins.metrics.api.metric.data.Metric
 import dev.cubxity.plugins.metrics.api.util.fastForEach
-import dev.cubxity.plugins.metrics.api.util.toGoString
 import dev.cubxity.plugins.metrics.influx.config.InfluxConfig
 import kotlinx.coroutines.*
 import kotlin.math.max
@@ -97,13 +95,6 @@ class InfluxMetricsDriver(private val api: UnifiedMetrics, private val config: I
             when (metric) {
                 is GaugeMetric -> point.addField("gauge", metric.value)
                 is CounterMetric -> point.addField("counter", metric.value)
-                is HistogramMetric -> {
-                    metric.bucket.fastForEach { bucket ->
-                        point.addField(bucket.upperBound.toGoString(), bucket.cumulativeCount)
-                    }
-                    point.addField("count", metric.sampleCount)
-                    point.addField("sum", metric.sampleSum)
-                }
             }
 
             writeApi.writePoint(point)

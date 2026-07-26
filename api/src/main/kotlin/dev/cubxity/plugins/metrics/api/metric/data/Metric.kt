@@ -49,21 +49,3 @@ class CounterMetric(
         value: Number
     ) : this(name, labels, value.toDouble())
 }
-
-class HistogramMetric(
-    name: String,
-    labels: Labels = emptyMap(),
-    val sampleCount: Double,
-    val sampleSum: Double,
-    val bucket: Array<Bucket>
-) : Metric(name, labels) {
-    constructor(
-        name: String,
-        labels: Labels = emptyMap(),
-        sampleCount: Number,
-        sampleSum: Number,
-        bucket: Array<Bucket>
-    ) : this(name, labels, sampleCount.toDouble(), sampleSum.toDouble(), bucket)
-}
-
-data class Bucket(val upperBound: Double, val cumulativeCount: Double)

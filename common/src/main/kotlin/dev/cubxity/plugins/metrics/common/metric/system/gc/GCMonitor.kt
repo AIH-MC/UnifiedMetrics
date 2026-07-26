@@ -18,15 +18,15 @@
 package dev.cubxity.plugins.metrics.common.metric.system.gc
 
 import com.sun.management.GarbageCollectionNotificationInfo
-import dev.cubxity.plugins.metrics.api.metric.collector.Histogram
+import dev.cubxity.plugins.metrics.api.metric.collector.Gauge
 import dev.cubxity.plugins.metrics.api.metric.collector.MILLISECONDS_PER_SECOND
 import javax.management.Notification
 import javax.management.NotificationListener
 import javax.management.openmbean.CompositeData
 
 class GCMonitor(
-    private val durationHistogram: Histogram,
-    private val freedHistogram: Histogram
+    private val durationGauge: Gauge,
+    private val freedGauge: Gauge
 ) : NotificationListener {
     override fun handleNotification(notification: Notification, handback: Any?) {
         if (notification.type != GarbageCollectionNotificationInfo.GARBAGE_COLLECTION_NOTIFICATION) {
@@ -36,7 +36,7 @@ class GCMonitor(
         val info = (notification.userData as? CompositeData)
             ?.let { GarbageCollectionNotificationInfo.from(it) }?.gcInfo ?: return
 
-        durationHistogram += info.duration / MILLISECONDS_PER_SECOND
+        durationGauge.set(info.duration / MILLISECONDS_PER_SECOND)
 
         var diff = 0L
 
@@ -47,6 +47,6 @@ class GCMonitor(
             diff -= usage.used
         }
 
-        freedHistogram += diff
+        freedGauge.set(diff)
     }
 }

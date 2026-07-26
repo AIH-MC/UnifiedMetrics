@@ -30,6 +30,7 @@ object Metrics {
         const val Plugins = "minecraft_plugins"
         const val PlayersCount = "minecraft_players_count"
         const val PlayersMax = "minecraft_players_max"
+        const val Tps = "minecraft_tps"
         const val TickDurationSeconds = "minecraft_tick_duration_seconds"
         const val WorldEntitiesCount = "minecraft_world_entities_count"
         const val WorldPlayersCount = "minecraft_world_players_count"

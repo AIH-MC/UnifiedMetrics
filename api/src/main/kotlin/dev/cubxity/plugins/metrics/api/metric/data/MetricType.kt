@@ -24,5 +24,4 @@ sealed class MetricType {
     object Unknown : MetricType()
     object Counter : MetricType()
     object Gauge : MetricType()
-    object Histogram : MetricType()
 }

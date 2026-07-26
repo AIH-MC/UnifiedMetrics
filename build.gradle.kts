@@ -71,6 +71,9 @@ subprojects {
     }
     afterEvaluate {
         configure<SigningExtension> {
+            // Local builds must not require release signing credentials. Publishing
+            // environments can still invoke signing explicitly after configuring a signatory.
+            isRequired = false
             sign(configurations["archives"])
         }
         tasks.findByName("shadowJar")?.also {

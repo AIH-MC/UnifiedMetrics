@@ -19,10 +19,8 @@ package dev.cubxity.plugins.metrics.prometheus.exporter
 
 import dev.cubxity.plugins.metrics.api.metric.data.CounterMetric
 import dev.cubxity.plugins.metrics.api.metric.data.GaugeMetric
-import dev.cubxity.plugins.metrics.api.metric.data.HistogramMetric
 import dev.cubxity.plugins.metrics.api.metric.data.Metric
 import dev.cubxity.plugins.metrics.api.util.fastForEach
-import dev.cubxity.plugins.metrics.api.util.toGoString
 import io.prometheus.client.Collector
 import java.io.Closeable
 
@@ -50,10 +48,6 @@ fun List<Metric>.toPrometheus(): List<Collector.MetricFamilySamples> {
                 type = Collector.Type.GAUGE
                 samples = ArrayList(metrics.size)
             }
-            is HistogramMetric -> {
-                type = Collector.Type.HISTOGRAM
-                samples = ArrayList((2 + metric.bucket.size) * metrics.size)
-            }
         }
 
         metrics.fastForEach { metric ->
@@ -66,30 +60,6 @@ fun List<Metric>.toPrometheus(): List<Collector.MetricFamilySamples> {
                 }
                 is GaugeMetric -> {
                     samples += Collector.MetricFamilySamples.Sample(metric.name, keys, values, metric.value)
-                }
-                is HistogramMetric -> {
-                    val keysWithLe = keys.toMutableList()
-                    keysWithLe += "le"
-
-                    val bucketName = "${metric.name}_bucket"
-
-                    metric.bucket.fastForEach { bucket ->
-                        val valuesWithLe = values.toMutableList()
-                        valuesWithLe += bucket.upperBound.toGoString()
-
-                        samples += Collector.MetricFamilySamples.Sample(
-                            bucketName,
-                            keysWithLe,
-                            valuesWithLe,
-                            bucket.cumulativeCount
-                        )
-                    }
-
-                    samples +=
-                        Collector.MetricFamilySamples.Sample("${metric.name}_count", keys, values, metric.sampleCount)
-
-                    samples +=
-                        Collector.MetricFamilySamples.Sample("${metric.name}_sum", keys, values, metric.sampleSum)
                 }
             }
         }

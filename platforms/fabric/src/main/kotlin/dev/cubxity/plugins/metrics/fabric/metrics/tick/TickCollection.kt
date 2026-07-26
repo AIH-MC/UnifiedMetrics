@@ -19,19 +19,13 @@ package dev.cubxity.plugins.metrics.fabric.metrics.tick
 
 import dev.cubxity.plugins.metrics.api.metric.collector.Collector
 import dev.cubxity.plugins.metrics.api.metric.collector.CollectorCollection
-import dev.cubxity.plugins.metrics.api.metric.collector.Histogram
+import dev.cubxity.plugins.metrics.api.metric.collector.Gauge
 import dev.cubxity.plugins.metrics.api.metric.collector.MILLISECONDS_PER_SECOND
-import dev.cubxity.plugins.metrics.api.metric.store.VolatileDoubleStore
-import dev.cubxity.plugins.metrics.api.metric.store.VolatileLongStore
 import dev.cubxity.plugins.metrics.common.metric.Metrics
 import dev.cubxity.plugins.metrics.fabric.events.TickEvent
 
 class TickCollection : CollectorCollection {
-    private val tickDuration = Histogram(
-        Metrics.Server.TickDurationSeconds,
-        sumStoreFactory = VolatileDoubleStore,
-        countStoreFactory = VolatileLongStore
-    )
+    private val tickDuration = Gauge(Metrics.Server.TickDurationSeconds)
 
     override val collectors: List<Collector> = listOf(tickDuration)
 
@@ -43,6 +37,6 @@ class TickCollection : CollectorCollection {
     }
 
     fun onTick(duration: Double) {
-        tickDuration += duration
+        tickDuration.set(duration)
     }
 }

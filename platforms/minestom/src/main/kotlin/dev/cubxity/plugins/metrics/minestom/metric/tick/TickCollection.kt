@@ -19,25 +19,18 @@ package dev.cubxity.plugins.metrics.minestom.metric.tick
 
 import dev.cubxity.plugins.metrics.api.metric.collector.Collector
 import dev.cubxity.plugins.metrics.api.metric.collector.CollectorCollection
-import dev.cubxity.plugins.metrics.api.metric.collector.Histogram
+import dev.cubxity.plugins.metrics.api.metric.collector.Gauge
 import dev.cubxity.plugins.metrics.api.metric.collector.MILLISECONDS_PER_SECOND
-import dev.cubxity.plugins.metrics.api.metric.store.VolatileDoubleStore
-import dev.cubxity.plugins.metrics.api.metric.store.VolatileLongStore
 import dev.cubxity.plugins.metrics.common.metric.Metrics
 import net.minestom.server.MinecraftServer
 import net.minestom.server.event.EventListener
 import net.minestom.server.event.server.ServerTickMonitorEvent
 
 class TickCollection : CollectorCollection {
-    // The callback is called from a single thread
-    private val tickDuration = Histogram(
-        Metrics.Server.TickDurationSeconds,
-        sumStoreFactory = VolatileDoubleStore,
-        countStoreFactory = VolatileLongStore
-    )
+    private val tickDuration = Gauge(Metrics.Server.TickDurationSeconds)
 
     private val listener = EventListener.of(ServerTickMonitorEvent::class.java) { event ->
-        tickDuration += event.tickMonitor.tickTime / MILLISECONDS_PER_SECOND
+        tickDuration.set(event.tickMonitor.tickTime / MILLISECONDS_PER_SECOND)
     }
 
     override val collectors: List<Collector> = listOf(tickDuration)
